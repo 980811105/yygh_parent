@@ -23,6 +23,7 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
+@CrossOrigin
 public class HospitalSetController {
     //注入service
     @Resource
@@ -74,7 +75,7 @@ public class HospitalSetController {
     }
 
     //4、添加医院设置
-    @PostMapping("saveHospital")
+    @PostMapping("saveHospitalSet")
     public Result saveHospitalSet(@RequestBody HospitalSet hospitalSet){
         //设置状态：1 可使用，0 不可使用
         hospitalSet.setStatus(1);
@@ -109,7 +110,7 @@ public class HospitalSetController {
     }
 
     //7、批量删除医院设置
-    @DeleteMapping("bathRemove")
+    @DeleteMapping("batchRemove")
     public Result bathRemoveHospitalSet(@RequestBody List<Long> idList){
         hospitalSetService.removeByIds(idList);
         return Result.ok();

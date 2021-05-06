@@ -13,6 +13,7 @@
     <modules>
         <module>service-user</module>
         <module>service_hosp</module>
+        <module>service_cmn</module>
     </modules>
 
     <dependencies>

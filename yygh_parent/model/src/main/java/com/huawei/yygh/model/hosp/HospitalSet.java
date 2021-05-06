@@ -37,11 +37,11 @@ public class HospitalSet extends BaseEntity {
 	@TableField("sign_key")
 	private String signKey;
 
-	@ApiModelProperty(value = "联系人姓名")
+	@ApiModelProperty(value = "联系地址")
 	@TableField("contacts_name")
 	private String contactsName;
 
-	@ApiModelProperty(value = "联系人手机")
+	@ApiModelProperty(value = "联系人电话")
 	@TableField("contacts_phone")
 	private String contactsPhone;
 
