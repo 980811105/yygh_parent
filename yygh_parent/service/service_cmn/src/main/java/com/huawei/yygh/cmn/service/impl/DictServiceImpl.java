@@ -9,6 +9,8 @@ import com.huawei.yygh.cmn.service.DictService;
 import com.huawei.yygh.model.cmn.Dict;
 import com.huawei.yygh.vo.cmn.DictEeVo;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +31,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Resource
     private DictMapper dictMapper;
 
+    //根据数据id查询子数据列表
     @Override
+    @Cacheable(value = "dict",keyGenerator = "keyGenerator")
     public List<Dict> findChildData(Long id) {
         QueryWrapper<Dict> wrapper = new QueryWrapper<>();
         wrapper.eq("parent_id",id);
@@ -79,6 +83,12 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
+    /**
+     * 导入
+     * allEntries = true：方法调用后清空所有缓存
+     * @param file
+     */
+    @CacheEvict(value = "dict", allEntries=true)
     @Override
     public void importDictData(MultipartFile file) {
         try {
@@ -88,3 +98,4 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 }
+
