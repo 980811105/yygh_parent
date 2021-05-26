@@ -1,9 +1,9 @@
 package com.huawei.yygh.model.user;
 
-import com.huawei.yygh.model.base.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.huawei.yygh.model.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -46,6 +46,7 @@ public class Patient extends BaseEntity {
 
 	@ApiModelProperty(value = "出生年月")
 	@JsonFormat(pattern = "yyyy-MM-dd")
+	//@JSONField(format="yyyy-MM-dd")
 	@TableField("birthdate")
 	private Date birthdate;
 

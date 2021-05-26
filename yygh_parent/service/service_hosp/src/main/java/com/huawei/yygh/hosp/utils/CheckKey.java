@@ -12,6 +12,10 @@ import java.util.Map;
  * @create: 2021-05-11 21:17
  **/
 public class CheckKey {
+    public Map<String, Object> getParamMap(HttpServletRequest request){
+        return HttpRequestHelper.switchMap(request.getParameterMap());
+    }
+
     public boolean flagCheck(HttpServletRequest request,HospitalSetService hospitalSetService,String hoscode){
         Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
         String hospSign = (String)paramMap.get("sign");

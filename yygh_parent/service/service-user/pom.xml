@@ -11,5 +11,11 @@
 
     <artifactId>service-user</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.huawei</groupId>
+            <artifactId>service_cmn_client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 </project>

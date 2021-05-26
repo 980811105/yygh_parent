@@ -65,10 +65,10 @@ public final class HttpUtil {
 			BufferedReader in = new BufferedReader(new InputStreamReader(httpcon.getInputStream(),"utf-8"));
 			String inputLine;
 			StringBuilder bankXmlBuffer = new StringBuilder();
-			while ((inputLine = in.readLine()) != null) {  
-			    bankXmlBuffer.append(inputLine);  
-			}  
-			in.close();  
+			while ((inputLine = in.readLine()) != null) {
+				bankXmlBuffer.append(inputLine);
+			}
+			in.close();
 			httpcon.disconnect();
 			return bankXmlBuffer.toString().getBytes();
 		} catch (Exception ex) {

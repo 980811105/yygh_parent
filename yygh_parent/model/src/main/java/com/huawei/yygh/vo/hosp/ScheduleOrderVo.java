@@ -1,6 +1,6 @@
 package com.huawei.yygh.vo.hosp;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +31,7 @@ public class ScheduleOrderVo {
 	private String title;
 
 	@ApiModelProperty(value = "安排日期")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date reserveDate;
 
 	@ApiModelProperty(value = "剩余预约数")

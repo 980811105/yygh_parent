@@ -9,14 +9,16 @@ import com.huawei.yygh.common.utils.MD5;
 import com.huawei.yygh.hosp.service.DepartmentService;
 import com.huawei.yygh.hosp.service.HospitalService;
 import com.huawei.yygh.hosp.service.HospitalSetService;
+import com.huawei.yygh.hosp.service.ScheduleService;
 import com.huawei.yygh.hosp.utils.CheckKey;
 import com.huawei.yygh.model.hosp.Department;
 import com.huawei.yygh.model.hosp.Hospital;
+import com.huawei.yygh.model.hosp.Schedule;
 import com.huawei.yygh.vo.hosp.DepartmentQueryVo;
+import com.huawei.yygh.vo.hosp.ScheduleQueryVo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +33,6 @@ import java.util.Map;
  **/
 @RestController
 @RequestMapping("/api/hosp")
-@CrossOrigin
 public class ApiController {
     @Resource
     private HospitalService hospitalService;
@@ -39,17 +40,77 @@ public class ApiController {
     private HospitalSetService hospitalSetService;
     @Resource
     private DepartmentService departmentService;
+    @Resource
+    private ScheduleService scheduleService;
 
     CheckKey checkKey = new CheckKey();
+
+    @ApiOperation("删除排班信息")
+    @PostMapping("schedule/remove")
+    public Result removeSchedule(HttpServletRequest request) {
+        Map<String, Object> paramMap = checkKey.getParamMap(request);
+        String hoscode = (String)paramMap.get("hoscode");
+        String hosScheduleId  = (String) paramMap.get("hosScheduleId ");
+        if(!(checkKey.flagCheck(request,hospitalSetService,hoscode))) {
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        scheduleService.remove(hoscode,hosScheduleId );
+        return Result.ok();
+    }
+
+    @ApiOperation(value = "获取排班分页列表")
+    @PostMapping("schedule/list")
+    public Result schedule(HttpServletRequest request) {
+        Map<String, Object> paramMap = checkKey.getParamMap(request);
+        String hoscode = (String)paramMap.get("hoscode");
+        int page = StringUtils.isEmpty(paramMap.get("page"))
+                ? 1 : Integer.parseInt((String)paramMap.get("page"));
+        int limit = StringUtils.isEmpty(paramMap.get("limit"))
+                ? 1 : Integer.parseInt((String)paramMap.get("limit"));
+        if(!(checkKey.flagCheck(request,hospitalSetService,hoscode))) {
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        ScheduleQueryVo scheduleQueryVo = new ScheduleQueryVo();
+        scheduleQueryVo.setHoscode(hoscode);
+        //调用service方法
+        Page<Schedule> pageModel = scheduleService.selectPage(page,limit,scheduleQueryVo);
+        return Result.ok(pageModel);
+    }
+
+    @ApiOperation("上传排班信息")
+    @PostMapping("saveSchedule")
+    public Result savaSchedule(HttpServletRequest request){
+        Map<String, Object> paramMap = checkKey.getParamMap(request);
+        String hoscode = (String)paramMap.get("hoscode");
+        if(!(checkKey.flagCheck(request,hospitalSetService,hoscode))) {
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        scheduleService.save(paramMap);
+        return Result.ok();
+    }
+
+    @ApiOperation("删除科室信息")
+    @PostMapping("department/remove")
+    public Result removeDepartment(HttpServletRequest request) {
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        String hoscode = (String)paramMap.get("hoscode");
+        String depcode = (String) paramMap.get("depcode");
+        if(!(checkKey.flagCheck(request,hospitalSetService,hoscode))) {
+            throw new YyghException(ResultCodeEnum.SIGN_ERROR);
+        }
+        departmentService.remove(hoscode,depcode);
+        return Result.ok();
+    }
 
     @ApiOperation("查询科室接口/获取分页列表")
     @PostMapping("department/list")
     public Result findDepartment(HttpServletRequest request){
         Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
         String hoscode = (String)paramMap.get("hoscode");
-        String depcode = (String) paramMap.get("depcode");
-        int page = StringUtils.isEmpty(paramMap.get("page")) ? 1 : Integer.parseInt((String)paramMap.get("page"));
-        int limit = StringUtils.isEmpty(paramMap.get("limit")) ? 1 : Integer.parseInt((String)paramMap.get("limit"));
+        int page = StringUtils.isEmpty(paramMap.get("page"))
+                ? 1 : Integer.parseInt((String)paramMap.get("page"));
+        int limit = StringUtils.isEmpty(paramMap.get("limit"))
+                ? 1 : Integer.parseInt((String)paramMap.get("limit"));
         if(!(checkKey.flagCheck(request,hospitalSetService,hoscode))) {
             throw new YyghException(ResultCodeEnum.SIGN_ERROR);
         }
@@ -58,7 +119,6 @@ public class ApiController {
         //调用service方法
         Page<Department> pageModel = departmentService.findPageDepartment(page,limit,departmentQueryVo);
         return Result.ok(pageModel);
-
     }
 
     @ApiOperation("上传科室接口")
@@ -74,6 +134,7 @@ public class ApiController {
         departmentService.save(paramMap);
         return Result.ok();
     }
+
     @ApiOperation(value = "查询医院信息")
     @PostMapping("hospital/show")
     public Result getHospital(HttpServletRequest request) {
@@ -105,7 +166,6 @@ public class ApiController {
         if (!hospSign.equals(signKeyMd5)) {
             throw new YyghException(ResultCodeEnum.SIGN_ERROR);
         }
-
         //传输过程中“+”转换成了“ ”,因为需要转换回来
         String logoData = (String) paramMap.get("logoData");
         logoData = logoData.replace(" ","+");

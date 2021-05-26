@@ -16,10 +16,9 @@ import java.util.List;
  * @author: Leslie
  * @create: 2021-04-29 21:34
  **/
-@Api(description = "数据字典接口" )
+@Api(tags = "数据字典接口" )
 @RestController
 @RequestMapping("/admin/cmn/dict")
-@CrossOrigin
 public class DictController {
     @Resource
     private DictService dictService;
@@ -44,6 +43,35 @@ public class DictController {
     public Result findChildData(@PathVariable Long id){
         List<Dict> childData = dictService.findChildData(id);
         return Result.ok(childData);
+    }
+
+    //根据dictcode和value查询
+    @ApiOperation(value = "获取数据字典名称")
+    @GetMapping("getName/{dictCode}/{value}")
+    public String getName(@PathVariable("dictCode") String dictCode,
+                          @PathVariable("value") String value){
+        return dictService.getNameByDictCodeAndValue(dictCode,value);
+    }
+    /**
+     * Description:根据value查询
+     * @param: * @param value
+     * @return:java.lang.String
+     */
+    @ApiOperation(value = "获取数据字典名称")
+    @GetMapping("getName/{value}")
+    public String getName(@PathVariable("value") String value){
+        return dictService.getNameByDictCodeAndValue("",value);
+    }
+    /**
+     * Description: 根据dictCode获取下级节点
+     * @param: * @param dictCode
+     * @return:com.huawei.yygh.common.result.Result<java.util.List<com.huawei.yygh.model.cmn.Dict>>
+     */
+    @ApiOperation(value = "根据dictCode获取下级节点")
+    @GetMapping(value = "/findByDictCode/{dictCode}")
+    public Result findByDictCode(@PathVariable String dictCode) {
+        List<Dict> list = dictService.findByDictCode(dictCode);
+        return Result.ok(list);
     }
 
 }
