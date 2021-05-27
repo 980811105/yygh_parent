@@ -1,6 +1,5 @@
 package com.huawei.hospital.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.huawei.hospital.mapper.OrderInfoMapper;
 import com.huawei.hospital.mapper.ScheduleMapper;
@@ -10,9 +9,7 @@ import com.huawei.hospital.model.Schedule;
 import com.huawei.hospital.service.HospitalService;
 import com.huawei.hospital.util.ResultCodeEnum;
 import com.huawei.hospital.util.YyghException;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +40,7 @@ public class HospitalServiceImpl implements HospitalService {
         String reserveTime = (String)paramMap.get("reserveTime");
         String amount = (String)paramMap.get("amount");
 
+        System.out.println("hosScheduleId="+hosScheduleId);
         Schedule schedule = this.getSchedule("1L");
         if(null == schedule) {
             throw new YyghException(ResultCodeEnum.DATA_ERROR);
@@ -73,9 +71,9 @@ public class HospitalServiceImpl implements HospitalService {
             int number = schedule.getReservedNumber().intValue() - schedule.getAvailableNumber().intValue();
             orderInfo.setNumber(number);
             orderInfo.setAmount(new BigDecimal(amount));
-            String fetchTime = "0".equals(reserveDate) ? " 09:30前" : " 14:00前";
-            orderInfo.setFetchTime(reserveTime + fetchTime);
-            orderInfo.setFetchAddress("一楼9号窗口");
+            String fetchTime = "0".equals(reserveTime) ? " 09:30前" : " 14:00前";
+            orderInfo.setFetchTime(reserveDate + fetchTime);
+            orderInfo.setFetchAddress("一楼9号");
             //默认 未支付
             orderInfo.setOrderStatus(0);
             orderInfoMapper.insert(orderInfo);
@@ -87,9 +85,9 @@ public class HospitalServiceImpl implements HospitalService {
             //预约号序
             resultMap.put("number", number);
             //取号时间
-            resultMap.put("fetchTime", reserveDate + "09:00前");;
+            resultMap.put("fetchTime", reserveDate + " 09:00前");;
             //取号地址
-            resultMap.put("fetchAddress", "一层114窗口");;
+            resultMap.put("fetchAddress", "一层114");;
             //排班可预约数
             resultMap.put("reservedNumber", schedule.getReservedNumber());
             //排班剩余预约数
